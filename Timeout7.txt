@@ -1,0 +1,58 @@
+using Gurobi
+using JuMP
+
+m = 40
+solution_file_path = "/scratchbeta/clementf/To7.jl"
+log_file_path = "/scratchbeta/clementf/To7_LogFile.txt"
+solution_save_interval_secs = 20000 # save solution to disk every 1 hour
+
+function save_solution_to_file(x, file_path)
+    output_file = open(file_path, "w")
+    write(output_file, "x = ")
+    show(output_file, JuMP.value.(x))
+    write(output_file, "\n")
+    close(output_file)
+end
+
+Sparse = JuMP.Model()
+JuMP.set_optimizer(Sparse, Gurobi.Optimizer)
+JuMP.set_optimizer_attribute(Sparse, "NonConvex", 2)
+JuMP.set_optimizer_attribute(Sparse, "LogFile", log_file_path)
+
+JuMP.@variable(Sparse, 0<=x[0:2*m+1]<=1)
+JuMP.@variable(Sparse, y[0:m+1,0:m], Bin)
+JuMP.@variable(Sparse, z>=0)
+
+JuMP.@constraint(Sparse, [i in 1:m, j in 1:i], 1/m* sum(y[u,j] for u in 1:i) - x[2*i-1]*x[2*j] <= z + 1 - y[i,j])
+JuMP.@constraint(Sparse, [i in 1:m+1, j in 0:i-1], -1/m* (sum(y[u,j] for u in 0:i-1) -1) + x[2*i-1]*x[2*j] <= z + 1 - y[i,j])
+JuMP.@constraint(Sparse, [i in 1:m-1], x[2*i+1] - x[2*i-1] >= y[i,i+1]-1+1/m)
+JuMP.@constraint(Sparse, [i in 1:m-1, j in i+1:m], x[2*j]-x[2*i] >= y[i,j]-1+1/m)
+JuMP.@constraint(Sparse, x[0] == 1)
+JuMP.@constraint(Sparse, x[2*m+1] == 1)
+JuMP.@constraint(Sparse, [j in 1:m], y[0,j] == 0)
+JuMP.@constraint(Sparse, [j in 0:m], y[j,0] == 1)
+JuMP.@constraint(Sparse, [j in 0:m], y[m+1,j] == 1)
+JuMP.@constraint(Sparse, [i in 1:m-1, j in i+1:m], x[2*j]-x[2*i] <= y[i,j])
+JuMP.@constraint(Sparse, [i in 1:m, j in 1:i-1], y[i,j]==1-y[j,i])
+JuMP.@constraint(Sparse, [i in 1:m], y[i,i]==1)
+
+JuMP.@objective(Sparse, Min, z)
+
+
+    JuMP.set_optimizer_attribute(Sparse, "TimeLimit", solution_save_interval_secs)
+    JuMP.optimize!(Sparse)
+
+    # Check if optimal or stopped due to time
+    term_status = JuMP.termination_status(Sparse)
+    if term_status == MOI.OPTIMAL
+        println("Optimal solution found!")
+        save_solution_to_file(x, solution_file_path)
+        break
+    elseif term_status == MOI.TIME_LIMIT
+        println("TIME_LIMIT happened, saving current solution...")
+        save_solution_to_file(x, solution_file_path)
+    else
+        println("Solver finished with status: ", term_status)
+        break
+    end
+
