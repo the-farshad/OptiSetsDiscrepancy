@@ -1,6 +1,6 @@
 using JuMP
 using Gurobi
-#log_file_path = "/scratchbeta/clementf/96.txt"
+log_file_path = "/scratchbeta/clementf/Ext2.txt"
 # 2d continuous case - assignment version for extreme discrepancy
 
 # prerequisites in julia:
@@ -21,51 +21,59 @@ set_optimizer(Sparse,Gurobi.Optimizer)
 
 # Activate the nonconvex option for Gurobi
 set_optimizer_attribute(Sparse, "NonConvex", 2)
-#set_optimizer_attribute(Sparse, "MIPGap", 0.0001)
+#set_optimizer_attribute(Sparse, "MIPGap", 0.0000001)
 
 # number of points to be located: m
-#set_optimizer_attribute(Sparse, "LogFile", log_file_path)
+set_optimizer_attribute(Sparse, "LogFile", log_file_path)
 m =2
 epsi=0.0001
 
 
 # definition of the continuous variables defining the x-coordinates of points, in non-decreasing order, index m+1 for the dummy points, value 1
-@variable(Sparse, 0.00001<=x[1:m+1]<=1)
+@variable(Sparse, 0<=x[0:m+1]<=1)
 
 # definition of the continuous variables defining the y-coordinates of points, in non-decreasing order, index m+1 for the dummy points, value 1
-@variable(Sparse, 0.00001<=y[1:m+1]<=1)
+@variable(Sparse, 0<=y[0:m+1]<=1)
 
 
 # definition of binary variables that identify the assigment of x- to y-components
-@variable(Sparse, a[1:m+1,1:m+1], Bin)
+@variable(Sparse, a[0:m+1,0:m+1], Bin)
 
 # continuous variable that takes on the value of the star-discrepancy
 @variable(Sparse, z>=0)
 
-@constraint(Sparse, z<=0.9)
+#@constraint(Sparse, z<=0.9)
 
 
 # constraints (5a) Extreme or Normal
-@constraint(Sparse, [i in 1:m, j in 1:m, k in 1:i, l in 1:j], 1/m* sum(a[u,v] for u in k:i, v in l:j) - (x[i]-x[k])*(y[j]-y[l]) <= z )
+
 #@constraint(Sparse, [i in 1:m, j in 1:m], 1/m* sum(a[u,v] for u in 1:i, v in 1:j) - x[i]*y[j] <= z + (2- sum(a[u,j] for u in 1:i)-sum(a[i,v] for v in 1:j)))
 
 # constraints (5b)
-@constraint(Sparse, [i in 1:m+1, j in 1:m+1, k in 1:i, l in 1:j], -1/m* sum(a[u,v] for u in k:i-1, v in l:j-1) + (x[i]-x[k])*(y[j]-y[l]) <= z )
 #@constraint(Sparse, [i in 1:m+1, j in 1:m+1], -1/m* sum(a[u,v] for u in 1:i-1, v in 1:j-1) + x[i]*y[j] <= z + (2- sum(a[u,j] for u in 1:i-1)-sum(a[i,v] for v in 1:j-1)))
 
 
+@constraint(Sparse, [i in 1:m, j in 1:m, k in 0:i, l in 0:j], 1/m* sum(a[u,v] for u in k:i, v in l:j) - (x[i]-x[k])*(y[j]-y[l]) <= z )
 
+@constraint(Sparse, [i in 1:m+1, j in 1:m+1, k in 0:i, l in 0:j], -1/m* sum(a[u,v] for u in k+1:i-1, v in l+1:j-1) + (x[i]-x[k])*(y[j]-y[l]) <= z )
 
 
 # constraints (5f)
-#@constraint(Sparse, [i in 1:m-1], x[i+1] - x[i] >= epsi)
-#@constraint(Sparse, [i in 1:m-1], y[i+1] - y[i] >= epsi)
+#@constraint(Sparse, [i in 0:m-1], x[i+1] - x[i] >= epsi)
+#@constraint(Sparse, [i in 0:m-1], y[i+1] - y[i] >= epsi)
  
 #
 @constraint(Sparse, a[1,m+1] == 1)
 @constraint(Sparse, a[m+1,1] == 1)
 @constraint(Sparse, [i in 2:m+1], a[i,m+1] == 0)
 @constraint(Sparse, [j in 2:m+1], a[m+1,j] == 0)
+@constraint(Sparse, [i in 1:m+1], a[i,0] == 0)
+@constraint(Sparse, [j in 0:m+1], a[0,j] == 0)
+
+
+@constraint(Sparse, x[0] == 0)
+@constraint(Sparse, y[0] == 0)
+
 
 @constraint(Sparse, x[m+1] == 1)
 @constraint(Sparse, y[m+1] == 1)
@@ -78,7 +86,7 @@ epsi=0.0001
 
 
 # constraints (5k)
-@constraint(Sparse, z>= 1/m)
+#@constraint(Sparse, z>= 1/m)
 
 
 
@@ -88,7 +96,7 @@ optimize!(Sparse)
 
 
 # to save the solution as a vector in file - the name follows the concept Sample2d_cont_m
-output_file= open("/scratchbeta/clementf/OC_96.jl", "w")
+output_file= open("/scratchbeta/clementf/OCE_2.jl", "w")
 write(output_file, "x = ")
 show(output_file, value.(x))
 write(output_file, "\n")
