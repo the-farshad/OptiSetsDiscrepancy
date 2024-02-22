@@ -9,3 +9,6 @@ In general:
 -> 86 to 94 correspond to the extreme discrepancy.
 -> 95 to 103 correspond to the periodic discrepancy.
 -> 104 to 165 correspond to single parameter then double parameter lattices (n=11 to 40)
+
+
+Feel free to contact me at francois.clement@lip6.fr for more models/sets/plots, not everything was uploaded.
