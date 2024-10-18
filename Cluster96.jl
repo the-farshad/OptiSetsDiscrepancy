@@ -1,6 +1,6 @@
 using JuMP
 using Gurobi
-log_file_path = "/scratchbeta/clementf/Ext2.txt"
+log_file_path = "./logs/Ext2.txt"
 # 2d continuous case - assignment version for extreme discrepancy
 
 # prerequisites in julia:
@@ -96,7 +96,7 @@ optimize!(Sparse)
 
 
 # to save the solution as a vector in file - the name follows the concept Sample2d_cont_m
-output_file= open("/scratchbeta/clementf/OCE_2.jl", "w")
+output_file= open("./outputs/clementf/OCE_2.jl", "w")
 write(output_file, "x = ")
 show(output_file, value.(x))
 write(output_file, "\n")

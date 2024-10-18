@@ -1,6 +1,6 @@
 using JuMP
 using Gurobi
-log_file_path = "/scratchbeta/clementf/Pb4.txt"
+log_file_path = "./logs/Pb4.txt"
 # 2d continuous case - assignment version for perio discrepancy
 
 # prerequisites in julia:
@@ -103,7 +103,7 @@ epsi=0.002
 
 optimize!(Sparse)
 
-output_file= open("/scratchbeta/clementf/PE_4.jl","w")
+output_file= open("./outputs/clementf/PE_4.jl","w")
 write(output_file, "x = ")
 show(output_file, value.(x))
 write(output_file, "\n")

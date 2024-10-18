@@ -1,6 +1,6 @@
 using JuMP
 using Gurobi
-log_file_path = "/scratchbeta/clementf/64bis.txt"
+log_file_path = "./logs/64bis.txt"
 # 3d continuous case, Model 5 - assignment version
 
 # julia command: include("M5_cont3d.jl")
@@ -97,7 +97,7 @@ optimize!(Sparse)
 
 
 # to save the solution as a vector in file - the name follows the concept Sample2d_cont_m
-output_file= open("/scratchbeta/clementf/OC_64_bis.jl", "w")
+output_file= open("./outputs/OC_64_bis.jl", "w")
 write(output_file, "x = ")
 show(output_file, value.(x))
 close(output_file)

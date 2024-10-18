@@ -1,6 +1,6 @@
 using JuMP
 using Gurobi
-log_file_path = "/scratchbeta/clementf/30.txt"
+log_file_path = "./logs/30.txt"
 # 2d continuous case, basic model using dummy points, full constraints
 
 # julia command: include("Sparse2_cont.jl")
@@ -101,7 +101,7 @@ eps = 0.0001*1/m
 optimize!(Sparse)
 
 # to save the solution as a vector in file - the name follows the concept Sample2d_cont_m
-output_file= open("/scratchbeta/clementf/OC_30.jl", "w")
+output_file= open("./outputs/OC_30.jl", "w")
 write(output_file, "x = ")
 show(output_file, value.(x))
 close(output_file)
