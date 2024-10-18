@@ -1,6 +1,6 @@
-# Constructing Optimal \( L_{\infty} \) Star Discrepancy Sets
+# Constructing Optimal $L_{\infty}$ Star Discrepancy Sets
 
-This repository contains the code used to generate the optimal \( L_{\infty} \) star discrepancy sets presented in the paper *"Constructing Optimal \( L_{\infty} \) Star Discrepancy Sets"* by François Clément, Carola Doerr, Kathrin Klamroth, and Luís Paquete.
+This repository contains the code used to generate the optimal $L_{\infty}$ star discrepancy sets presented in the paper *"Constructing Optimal $L_{\infty}$ Star Discrepancy Sets"* by François Clément, Carola Doerr, Kathrin Klamroth, and Luís Paquete.
 
 ### Requirements
 [Julia](https://julialang.org/) is required to run the code. The code was tested with Julia 1.11.0.
@@ -51,7 +51,7 @@ Alternatively, if you are outside the project directory, use:
 julia --project=PATH_TO_PROJECT Cluster10.jl
 ```
 
-### Optimal Sets for the \( L_{\infty} \) Star/Periodic/Extreme/Multiple-Corner Discrepancy
+### Optimal Sets for the $L_{\infty}$ Star/Periodic/Extreme/Multiple-Corner Discrepancy
 
 In general:
 - 1 to 20 correspond to the continuous model with few constraints.
@@ -62,7 +62,7 @@ In general:
 - 69 to 85 correspond to the multiple-corner cases.
 - 86 to 94 correspond to the extreme discrepancy.
 - 95 to 103 correspond to the periodic discrepancy.
-- 104 to 165 correspond to single-parameter and double-parameter lattices (for \( n = 11 \) to 40).
+- 104 to 165 correspond to single-parameter and double-parameter lattices (for $n = 11$ to 40).
 
 Feel free to contact me at [francois.clement@lip6.fr](mailto:francois.clement@lip6.fr) for more models, sets, or plots, as not everything was uploaded.
 
